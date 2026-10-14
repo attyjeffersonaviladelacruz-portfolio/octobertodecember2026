@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Activity Matrix & Gantt Chart</title>
+    <title>Activity Management Matrix & Gantt Chart</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -20,7 +20,6 @@
         }
     </script>
     <style>
-        /* Custom scrollbars */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -47,7 +46,7 @@
 <body class="h-full text-slate-800 dark:text-slate-100 dark:bg-slate-900 transition-colors duration-200">
 
     <div id="app" class="min-h-screen flex flex-col">
-        <!-- Header / Navigation Banner -->
+        <!-- Header Banner -->
         <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-20 shadow-sm">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -57,11 +56,11 @@
                         </div>
                         <div>
                             <h1 class="text-xl font-bold text-slate-900 dark:text-white leading-tight">Project Activity Matrix & Gantt Chart</h1>
-                            <p class="text-xs text-slate-500 dark:text-slate-400">Implementation Plan • Q4 (October – December)</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Implementation Plan & Updated Financial Allocations • Q4 (October – December)</p>
                         </div>
                     </div>
 
-                    <!-- View Toggle & Quick Actions -->
+                    <!-- View Switcher Controls -->
                     <div class="flex flex-wrap items-center gap-2">
                         <div class="bg-slate-100 dark:bg-slate-700 p-1 rounded-lg flex items-center border border-slate-200 dark:border-slate-600">
                             <button id="btnViewGantt" onclick="switchView('gantt')" class="px-3 py-1.5 rounded-md text-xs font-semibold flex items-center gap-1.5 transition-all bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-sm">
@@ -70,11 +69,11 @@
                             </button>
                             <button id="btnViewMatrix" onclick="switchView('matrix')" class="px-3 py-1.5 rounded-md text-xs font-semibold flex items-center gap-1.5 transition-all text-slate-600 dark:text-slate-300 hover:text-slate-900">
                                 <i class="fa-solid fa-table-list"></i>
-                                <span>Matrix View</span>
+                                <span>Matrix & Budget</span>
                             </button>
                             <button id="btnViewCards" onclick="switchView('cards')" class="px-3 py-1.5 rounded-md text-xs font-semibold flex items-center gap-1.5 transition-all text-slate-600 dark:text-slate-300 hover:text-slate-900">
                                 <i class="fa-solid fa-grip"></i>
-                                <span>Cards</span>
+                                <span>Cards View</span>
                             </button>
                         </div>
 
@@ -89,19 +88,64 @@
         <!-- Main Content Area -->
         <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 
-            <!-- Search & Filter Controls -->
+            <!-- Summary KPI Metric Cards -->
+            <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-xs flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Total Allocated Budget</p>
+                        <h3 id="statTotalBudget" class="text-xl font-extrabold text-indigo-600 dark:text-indigo-400 mt-1">₱3,440,868.75</h3>
+                        <p class="text-[11px] text-slate-400 mt-0.5">Exact updated budget total</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-wallet"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-xs flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Top Allocated Activity</p>
+                        <h3 id="statMaxBudget" class="text-sm font-bold text-slate-800 dark:text-slate-100 truncate max-w-[150px] mt-1">Community Dev Materials</h3>
+                        <p id="statMaxVal" class="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 mt-0.5">₱832,900.00</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-xs flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Active Budgeted Items</p>
+                        <h3 id="statFundedCount" class="text-xl font-extrabold text-amber-600 dark:text-amber-400 mt-1">8 / 14</h3>
+                        <p class="text-[11px] text-slate-400 mt-0.5">6 items with zero/unallocated budget</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-receipt"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-xs flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Filtered View Total</p>
+                        <h3 id="statFilteredBudget" class="text-lg font-extrabold text-slate-800 dark:text-white mt-1">₱3,440,868.75</h3>
+                        <p id="statFilteredCount" class="text-[11px] text-indigo-500 font-medium mt-0.5">14 activities shown</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-filter"></i>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Search, Filter & Sorting Bar -->
             <section class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
-                    <!-- Search Input -->
-                    <div class="relative md:col-span-5">
+                    <div class="relative md:col-span-4">
                         <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                        <input type="text" id="searchInput" oninput="applyFilters()" placeholder="Search activities, steps, outputs..." class="w-full pl-9 pr-4 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white">
+                        <input type="text" id="searchInput" oninput="applyFilters()" placeholder="Search activity, process, budget..." class="w-full pl-9 pr-4 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white">
                     </div>
 
-                    <!-- Category Filter -->
-                    <div class="md:col-span-4">
+                    <div class="md:col-span-3">
                         <select id="categoryFilter" onchange="applyFilters()" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white">
-                            <option value="ALL">All Categories / Domains</option>
+                            <option value="ALL">All Activity Categories</option>
                             <option value="Training">Capacity Building & Training</option>
                             <option value="Community">Community Education & Advocacy</option>
                             <option value="Governance/Policy">Governance, Policy & Legislation</option>
@@ -110,107 +154,122 @@
                         </select>
                     </div>
 
-                    <!-- Month Filter -->
-                    <div class="md:col-span-3">
+                    <div class="md:col-span-2">
                         <select id="monthFilter" onchange="applyFilters()" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white">
-                            <option value="ALL">All Timeline Months</option>
-                            <option value="October">October Active</option>
-                            <option value="November">November Active</option>
-                            <option value="December">December Active</option>
+                            <option value="ALL">All Months</option>
+                            <option value="October">October</option>
+                            <option value="November">November</option>
+                            <option value="December">December</option>
+                        </select>
+                    </div>
+
+                    <div class="md:col-span-3">
+                        <select id="sortByFilter" onchange="applyFilters()" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white font-medium">
+                            <option value="ID_ASC">Sort by Number (1 to 11A)</option>
+                            <option value="BUDGET_DESC">Sort by Budget (Highest First)</option>
+                            <option value="BUDGET_ASC">Sort by Budget (Lowest First)</option>
+                            <option value="TITLE_ASC">Sort by Activity Name</option>
                         </select>
                     </div>
                 </div>
 
-                <!-- Stats summary chips -->
                 <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100 dark:border-slate-700 text-xs text-slate-500">
                     <div class="flex items-center gap-3">
-                        <span>Showing <strong id="visibleCount" class="text-indigo-600 dark:text-indigo-400">14</strong> of 14 activities</span>
-                        <span class="hidden sm:inline">•</span>
-                        <span class="hidden sm:inline">Active Window: <strong>Oct – Dec</strong></span>
+                        <span>Showing <strong id="visibleCount" class="text-indigo-600 dark:text-indigo-400">14</strong> activities</span>
+                        <span>•</span>
+                        <span>Total Filtered Allocation: <strong id="visibleBudgetSum" class="text-emerald-600 dark:text-emerald-400 font-bold">₱3,440,868.75</strong></span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 font-medium border border-emerald-200 dark:border-emerald-800">
-                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Specific Dates (◆)
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 font-medium border border-amber-200 dark:border-amber-800">
+                            <i class="fa-solid fa-diamond text-[9px] text-amber-500"></i> Specific Event Dates
                         </span>
                         <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-medium border border-indigo-200 dark:border-indigo-800">
-                            <span class="w-2 h-2 rounded-full bg-indigo-500"></span> Implementation Span (■)
+                            <span class="w-2 h-2 rounded-full bg-indigo-500"></span> Scheduled Implementation
                         </span>
                     </div>
                 </div>
             </section>
 
-            <!-- VIEW 1: GANTT CHART VIEW -->
+            <!-- GANTT CHART VIEW -->
             <section id="ganttView" class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
                 <div class="p-4 border-b border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-2 bg-slate-50/50 dark:bg-slate-800/50">
                     <h2 class="text-sm font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-2">
                         <i class="fa-solid fa-timeline text-indigo-500"></i>
-                        Gantt Implementation Schedule
+                        Gantt Timeline Schedule
                     </h2>
                     <div class="flex items-center gap-3 text-xs text-slate-500">
-                        <span class="flex items-center gap-1"><span class="font-semibold text-slate-700 dark:text-slate-300">Legend:</span></span>
+                        <span class="font-semibold text-slate-700 dark:text-slate-300">Legend:</span>
                         <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-indigo-500 inline-block"></span> Scheduled implementation</span>
                         <span class="flex items-center gap-1"><i class="fa-solid fa-diamond text-amber-500 text-[10px]"></i> Specific activity milestone</span>
                     </div>
                 </div>
 
                 <div class="overflow-x-auto">
-                    <div class="min-w-[760px]">
-                        <!-- Gantt Table Header -->
+                    <div class="min-w-[850px]">
                         <div class="grid grid-cols-12 bg-slate-100 dark:bg-slate-700/60 text-xs font-semibold text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 py-2.5 px-4">
                             <div class="col-span-1 text-center">No.</div>
-                            <div class="col-span-5">Activity Title</div>
+                            <div class="col-span-4">Activity Title</div>
+                            <div class="col-span-2 text-right pr-3">Allocated Budget</div>
                             <div class="col-span-2 text-center border-l border-slate-200 dark:border-slate-600">October</div>
-                            <div class="col-span-2 text-center border-l border-slate-200 dark:border-slate-600">November</div>
+                            <div class="col-span-1 text-center border-l border-slate-200 dark:border-slate-600">November</div>
                             <div class="col-span-2 text-center border-l border-slate-200 dark:border-slate-600">December</div>
                         </div>
 
-                        <!-- Gantt Table Body -->
                         <div id="ganttRowsContainer" class="divide-y divide-slate-100 dark:divide-slate-700/50">
-                            <!-- Injected dynamically -->
+                            <!-- Populated dynamically -->
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- VIEW 2: MATRIX TABLE VIEW -->
+            <!-- MATRIX & BUDGET TABLE VIEW -->
             <section id="matrixView" class="hidden bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
-                <div class="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50">
+                <div class="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 flex items-center justify-between">
                     <h2 class="text-sm font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-2">
                         <i class="fa-solid fa-table text-indigo-500"></i>
-                        Comprehensive Activity Matrix
+                        Comprehensive Activity & Exact Budget Matrix
                     </h2>
+                    <span class="text-xs text-slate-500">Click any row to open details</span>
                 </div>
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse min-w-[900px]">
+                    <table class="w-full text-left border-collapse min-w-[1000px]">
                         <thead>
                             <tr class="bg-slate-100 dark:bg-slate-700/60 text-xs font-semibold text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700">
-                                <th class="py-3 px-4 w-16 text-center">No.</th>
-                                <th class="py-3 px-4 w-52">Activity Title</th>
-                                <th class="py-3 px-4 w-32">Category</th>
+                                <th class="py-3 px-4 w-12 text-center">No.</th>
+                                <th class="py-3 px-4 w-48">Activity Title</th>
+                                <th class="py-3 px-4 w-28">Category</th>
+                                <th class="py-3 px-4 w-36 text-right">Allocated Budget</th>
                                 <th class="py-3 px-4">Proposed Process / Key Steps</th>
-                                <th class="py-3 px-4 w-64">Expected Output</th>
-                                <th class="py-3 px-4 w-28 text-center">Timeline</th>
+                                <th class="py-3 px-4 w-52">Expected Output</th>
+                                <th class="py-3 px-4 w-24 text-center">Schedule</th>
                             </tr>
                         </thead>
                         <tbody id="matrixTableBody" class="divide-y divide-slate-100 dark:divide-slate-700/50 text-xs">
-                            <!-- Injected dynamically -->
+                            <!-- Populated dynamically -->
                         </tbody>
+                        <tfoot class="bg-indigo-50/70 dark:bg-indigo-950/50 border-t-2 border-indigo-200 dark:border-indigo-800 font-bold text-xs">
+                            <tr>
+                                <td colspan="3" class="py-3 px-4 text-slate-700 dark:text-slate-200 text-right uppercase tracking-wider">Total Allocated Budget:</td>
+                                <td id="matrixTotalBudget" class="py-3 px-4 text-right text-emerald-700 dark:text-emerald-300 font-extrabold text-sm">₱3,440,868.75</td>
+                                <td colspan="3" class="py-3 px-4 text-slate-500 dark:text-slate-400 text-xs font-normal">Calculated total across filtered items</td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
             </section>
 
-            <!-- VIEW 3: CARDS VIEW -->
+            <!-- CARDS VIEW -->
             <section id="cardsView" class="hidden">
                 <div id="cardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <!-- Injected dynamically -->
+                    <!-- Populated dynamically -->
                 </div>
             </section>
 
-            <!-- Planning Note Footer -->
+            <!-- Financial Note Footer -->
             <div class="bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/50 rounded-xl p-4 text-xs text-indigo-900 dark:text-indigo-200 flex items-start gap-3">
                 <i class="fa-solid fa-circle-info text-indigo-500 mt-0.5 text-base"></i>
                 <div>
-                    <strong class="font-semibold">Planning note:</strong> The schedule for activities without specific day dates is proposed based on the quarterly implementation timeframe (October to December). Click on any item row or Gantt bar to inspect full process workflows and target outputs.
+                    <strong class="font-semibold">Financial & Project Note:</strong> Budget values reflect exact allocations including travel fares, training logistics, honoraria, and venue arrangements across Dipolog, Roxas, and Liloy.
                 </div>
             </div>
         </main>
@@ -220,7 +279,6 @@
     <div id="activityModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden transform transition-all">
             
-            <!-- Modal Header -->
             <div id="modalHeader" class="p-5 border-b border-slate-200 dark:border-slate-700 flex items-start justify-between gap-4">
                 <div class="flex items-start gap-3">
                     <span id="modalBadge" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-200">
@@ -240,15 +298,32 @@
                 </button>
             </div>
 
-            <!-- Modal Content Body -->
             <div class="p-6 overflow-y-auto space-y-6 text-sm">
-                
-                <!-- Schedule Tag -->
-                <div class="bg-slate-50 dark:bg-slate-900/60 p-3 rounded-xl border border-slate-100 dark:border-slate-700 flex items-center justify-between">
-                    <span class="text-xs text-slate-500 dark:text-slate-400 font-medium"><i class="fa-regular fa-calendar-check mr-1.5"></i> Scheduled Period</span>
-                    <span id="modalSchedule" class="text-xs font-bold text-slate-800 dark:text-slate-200 bg-white dark:bg-slate-800 px-3 py-1 rounded-md border border-slate-200 dark:border-slate-700">
-                        Oct, Nov
-                    </span>
+                <!-- Financial & Schedule Banner Cards -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-slate-50 dark:bg-slate-900/60 p-3 rounded-xl border border-slate-100 dark:border-slate-700">
+                        <span class="text-[11px] text-slate-500 dark:text-slate-400 font-medium block"><i class="fa-regular fa-calendar-check mr-1"></i> Scheduled Period</span>
+                        <span id="modalSchedule" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-1 block">
+                            Oct, Nov
+                        </span>
+                    </div>
+                    <div class="bg-emerald-50/70 dark:bg-emerald-950/40 p-3 rounded-xl border border-emerald-200 dark:border-emerald-800/70">
+                        <span class="text-[11px] text-emerald-800 dark:text-emerald-400 font-medium block"><i class="fa-solid fa-coins mr-1"></i> Allocated Budget</span>
+                        <span id="modalBudgetValue" class="text-sm font-extrabold text-emerald-700 dark:text-emerald-300 mt-0.5 block">
+                            ₱0.00
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Budget Breakdown Card -->
+                <div id="modalBudgetBreakdownCard" class="bg-emerald-50/40 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/50 rounded-xl p-3.5 space-y-2">
+                    <div class="flex items-center justify-between text-xs font-bold text-emerald-800 dark:text-emerald-300 uppercase tracking-wider">
+                        <span><i class="fa-solid fa-receipt text-emerald-600 mr-1"></i> Budget Calculation & Notes</span>
+                        <span class="text-[10px] font-normal text-emerald-700 dark:text-emerald-400">Financial Detail</span>
+                    </div>
+                    <div id="modalBudgetItems" class="space-y-1.5 text-xs text-slate-700 dark:text-slate-300 pt-1">
+                        <!-- Populated dynamically -->
+                    </div>
                 </div>
 
                 <!-- Proposed Process Steps -->
@@ -258,7 +333,7 @@
                         Proposed Process / Key Steps Flow
                     </h4>
                     <div id="modalSteps" class="space-y-2">
-                        <!-- Step items dynamically populated -->
+                        <!-- Populated dynamically -->
                     </div>
                 </div>
 
@@ -268,13 +343,12 @@
                         <i class="fa-solid fa-bullseye text-emerald-500"></i>
                         Expected Output
                     </h4>
-                    <div id="modalOutput" class="p-3.5 bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60 rounded-xl text-emerald-900 dark:text-emerald-200 text-xs leading-relaxed font-medium">
-                        <!-- Output details dynamically populated -->
+                    <div id="modalOutput" class="p-3.5 bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800/60 rounded-xl text-indigo-900 dark:text-indigo-200 text-xs leading-relaxed font-medium">
+                        <!-- Populated dynamically -->
                     </div>
                 </div>
             </div>
 
-            <!-- Modal Footer -->
             <div class="p-4 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-700 flex justify-end">
                 <button onclick="closeModal()" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 text-xs font-semibold rounded-lg transition-colors">
                     Close Details
@@ -284,7 +358,6 @@
     </div>
 
     <script>
-        // Color definitions for each activity badge/theme
         const activityColors = {
             "1": { bg: "bg-indigo-50 dark:bg-indigo-950/40", border: "border-indigo-200 dark:border-indigo-800", text: "text-indigo-700 dark:text-indigo-300", bar: "bg-indigo-500", badge: "bg-indigo-600 text-white" },
             "2": { bg: "bg-blue-50 dark:bg-blue-950/40", border: "border-blue-200 dark:border-blue-800", text: "text-blue-700 dark:text-blue-300", bar: "bg-blue-500", badge: "bg-blue-600 text-white" },
@@ -302,172 +375,302 @@
             "11A": { bg: "bg-pink-50 dark:bg-pink-950/40", border: "border-pink-200 dark:border-pink-800", text: "text-pink-700 dark:text-pink-300", bar: "bg-pink-500", badge: "bg-pink-600 text-white" },
         };
 
-        // Complete dataset for 14 project activities
+        // Complete dataset with updated exact budget values and user notes
         const activitiesData = [
             {
                 id: "1",
                 title: "Police Training",
                 category: "Training",
+                refCode: "Ref: Item B",
+                referenceDetail: "To conduct three series of three-day and six-day training to 11 police officers from Dipolog, Roxas and Liloy to handle digital forensic investigation and analysis, information sharing, and collaboration with the Philippine National Police.",
+                participants: "11 Police Officers (Dipolog, Roxas, Liloy)",
+                locations: "Dipolog, Roxas, Liloy",
+                budget: 315250.00,
+                budgetFormula: null,
+                costBreakdown: [
+                    { item: "Allocated Police Training Budget", amount: 315250.00 }
+                ],
                 process: "Coordination meeting with the PNP Provincial Cyber Response Team → consultation with PNP ACG and participating LGUs → preparation and validation of training design and materials → confirmation of participants and venue → conduct of training, Nov. 9–12 → post-training evaluation and documentation",
                 output: "Trained police and social welfare personnel; training report",
                 months: ["November"],
-                scheduleType: "specific",
-                scheduleLabel: "◆ Nov 9–12",
-                ganttPosition: { month: "November", detail: "Nov 9–12", isSpecific: true }
+                scheduleLabel: "◆ Nov 9–12"
             },
             {
                 id: "2",
                 title: "KTCAP Training",
                 category: "Training",
+                refCode: "Ref: 1.2.5",
+                referenceDetail: "Three-day training of 30 Court Social Workers on Kids and Teens Court Awareness Program (KTCAP).",
+                participants: "30 Court Social Workers",
+                locations: "Court Jurisdictions",
+                budget: 476500.00,
+                budgetFormula: null,
+                costBreakdown: [
+                    { item: "KTCAP Capacity Building Allocation", amount: 476500.00 }
+                ],
                 process: "Coordination with CSWD and the courts → identification of 30 court social workers handling cases → consultation on training needs → finalization of training design and materials → conduct of training, Dec. 2–4 → evaluation and action planning",
                 output: "30 trained court social workers; training report and action points",
                 months: ["December"],
-                scheduleType: "specific",
-                scheduleLabel: "◆ Dec 2–4",
-                ganttPosition: { month: "December", detail: "Dec 2–4", isSpecific: true }
+                scheduleLabel: "◆ Dec 2–4"
             },
             {
                 id: "3",
                 title: "Community Development Materials",
                 category: "Community",
+                refCode: "Ref: 1.3.1",
+                referenceDetail: "Development of OSAEC community education materials on personal, digital safety and literacy.",
+                participants: "Children, Parents, Teachers, Community Stakeholders",
+                locations: "Target Barangays & Schools",
+                budget: 832900.00,
+                budgetFormula: null,
+                costBreakdown: [
+                    { item: "Development & Production of OSAEC IEC Materials", amount: 832900.00 }
+                ],
                 process: "Internal planning meeting → consultation with children, parents, teachers, and community stakeholders → drafting of IEC and awareness materials → technical and child-friendly review → validation with relevant stakeholders → revision, finalization, and reproduction",
                 output: "Validated community education and awareness materials",
                 months: ["October", "November", "December"],
-                scheduleType: "span",
-                scheduleLabel: "Oct – Dec",
-                ganttPosition: { months: ["October", "November", "December"], isSpan: true }
+                scheduleLabel: "Oct – Dec"
             },
             {
                 id: "4",
                 title: "Stakeholders’ Meeting",
                 category: "Partnerships",
+                refCode: "Ref: Stakeholders",
+                referenceDetail: "Preparation of stakeholder mapping, coordination meetings, project updates presentation, and formalizing agency commitments across participating LGUs.",
+                participants: "Participating Agencies & LGU Representatives",
+                locations: "Provincial / LGU Level",
+                budget: 0,
+                budgetFormula: null,
+                costBreakdown: [
+                    { item: "Stakeholder Coordination Allocation", amount: 0 }
+                ],
                 process: "Preparation of stakeholder mapping and agenda → issuance of invitations → coordination meeting with participating agencies and LGUs → presentation of project updates and gaps → discussion of commitments and next steps → preparation of minutes and action plan",
                 output: "Stakeholder commitments and agreed action plan",
                 months: ["December"],
-                scheduleType: "span",
-                scheduleLabel: "Dec (Week 2)",
-                ganttPosition: { month: "December", detail: "Week 2", isSpecific: false }
+                scheduleLabel: "Dec (Week 2)"
             },
             {
                 id: "5",
                 title: "Reconstitution of MDT",
                 category: "Governance/Policy",
+                refCode: "Ref: 1.2.4",
+                referenceDetail: "Three series of three-day capacity building for the formation of 3 multidisciplinary teams (MDT) and training on Trauma-informed care, therapy for OSAEC victims to 33 MDT members (Police=9, Social workers=9, Rural health=9 and Guidance counselors=12) in Dipolog, Roxas and Liloy.",
+                participants: "33 MDT Members (9 Police, 9 Social Workers, 9 Rural Health, 12 Guidance Counselors)",
+                locations: "Dipolog, Roxas, Liloy",
+                budget: 786600.00,
+                budgetFormula: "Fare only allocation",
+                costBreakdown: [
+                    { item: "Reconstitution of MDT (Fare only)", amount: 786600.00 }
+                ],
+                note: "Working on the reconstitution of MDT. Fare only.",
                 process: "Review of existing MDT composition and designation orders → coordination meeting with LGU and concerned agencies → consultation with PNP, CSWD/MSWDO, health, and other relevant offices → identification of representatives and alternates → preparation of reconstitution documents → endorsement and issuance of the appropriate order",
-                output: "Updated MDT membership and documented roles",
+                output: "Updated MDT membership and documented roles; 33 MDT members trained",
                 months: ["October", "November"],
-                scheduleType: "span",
-                scheduleLabel: "Oct – Nov",
-                ganttPosition: { months: ["October", "November"], isSpan: true }
+                scheduleLabel: "Oct – Nov"
             },
             {
                 id: "6",
                 title: "Memorandum Circular for KTCAP",
                 category: "Governance/Policy",
+                refCode: "Ref: 2.3.2",
+                referenceDetail: "Ten lobbying meetings with 2 Supreme Court Justices and 6 Family Court Judges to release a memorandum circular for the mainstreaming of a) KTCAP and b) CASAGAL.",
+                participants: "2 Supreme Court Justices, 6 Family Court Judges",
+                locations: "Judicial / Supreme Court & Family Courts",
+                budget: 0,
+                budgetFormula: null,
+                costBreakdown: [
+                    { item: "Lobbying & Advocacy Allocation", amount: 0 }
+                ],
                 process: "Internal legal and technical meeting → review of KTCAP objectives and applicable policies → consultation with relevant court and social welfare stakeholders → drafting of the memorandum circular → legal and technical review → submission to the authorized issuing office for consideration",
                 output: "Draft memorandum circular ready for review and endorsement",
                 months: ["October", "November"],
-                scheduleType: "span",
-                scheduleLabel: "Oct – Nov",
-                ganttPosition: { months: ["October", "November"], isSpan: true }
+                scheduleLabel: "Oct – Nov"
             },
             {
                 id: "7",
                 title: "CASAGAL Concept Note",
                 category: "Governance/Policy",
+                refCode: "Ref: 2.3.2",
+                referenceDetail: "Ten lobbying meetings with 2 Supreme Court Justices and 6 Family Court Judges to release a memorandum circular for the mainstreaming of Court Appointed Guardian Ad Litem (CASAGAL).",
+                participants: "Supreme Court Justices, Family Court Judges",
+                locations: "Judicial & Social Welfare Offices",
+                budget: 0,
+                budgetFormula: null,
+                costBreakdown: [
+                    { item: "CASAGAL Concept Note Allocation", amount: 0 }
+                ],
                 process: "Internal project planning meeting → review of the proposed initiative and target beneficiaries → consultation with relevant stakeholders → identification of objectives, activities, and resource requirements → preparation of the concept note → internal review and finalization",
                 output: "Draft or finalized CASAGAL concept note",
                 months: ["October", "November"],
-                scheduleType: "span",
-                scheduleLabel: "Oct – Nov",
-                ganttPosition: { months: ["October", "November"], isSpan: true }
+                scheduleLabel: "Oct – Nov"
             },
             {
                 id: "8",
                 title: "Anti-OSAEC Ordinance",
                 category: "Governance/Policy",
+                refCode: "Ref: 2.2.2 & 2.2.3",
+                referenceDetail: "Municipal (2.2.2): Conduct nine SB Council meetings with 30 SB to pass local ordinance/resolution localization of RA 11930 (Dipolog=3, Roxas=3, Liloy=3).\n\nBarangay (2.2.3): Conduct twenty-four meetings to 12 barangays with 36 pax to forge project partnerships. Costs for transportation.",
+                participants: "30 SB Members across 3 LGUs; 36 Barangay Officials across 12 Barangays",
+                locations: "Dipolog, Roxas, Liloy (12 Barangays)",
+                budget: 58193.75,
+                budgetFormula: "₱40,572.75 + ₱17,621.00",
+                costBreakdown: [
+                    { item: "Sanggunian Bayan (SB) Meetings Component", amount: 40572.75 },
+                    { item: "Barangay Partnership Meetings Component", amount: 17621.00 }
+                ],
                 process: "Review of existing ordinances and legal framework → consultation with LGUs and relevant agencies → drafting or revision of the ordinance → technical and legal review → consultation with barangay representatives and other stakeholders → presentation to the appropriate local legislative body → committee deliberation and legislative follow-up",
-                output: "Draft or revised ordinance, consultation records, and legislative action",
+                output: "Draft or revised ordinance, consultation records, and legislative action (RA 11930 localization)",
                 months: ["October", "November", "December"],
-                scheduleType: "span",
-                scheduleLabel: "Oct – Dec",
-                ganttPosition: { months: ["October", "November", "December"], isSpan: true }
+                scheduleLabel: "Oct – Dec"
             },
             {
                 id: "9",
                 title: "Counselling and Case Management for 24 OSAEC Survivors/Cases",
                 category: "Case Management",
+                refCode: "Ref: Case Mgmt",
+                referenceDetail: "Direct psychosocial intervention, counselling, individual case planning, and inter-agency referral for 24 child survivors of OSAEC adhering strictly to child protection protocols.",
+                participants: "24 Child Survivors / Cases",
+                locations: "Dipolog, Roxas, Liloy Areas",
+                budget: 67425.00,
+                budgetFormula: "₱20,000.00 + ₱24,000.00 + ₱23,425.00",
+                costBreakdown: [
+                    { item: "Counselling & Case Allocation Item 1", amount: 20000.00 },
+                    { item: "Counselling & Case Allocation Item 2", amount: 24000.00 },
+                    { item: "Counselling & Case Allocation Item 3", amount: 23425.00 }
+                ],
                 process: "Case identification and referral → assessment of immediate safety and psychosocial needs → preparation or updating of individual case plans → counselling and case management → coordination with appropriate service providers → monitoring, documentation, and case review, subject to confidentiality and survivor-centred protocols",
                 output: "24 children/cases provided with appropriate counselling and case management services; updated case records",
                 months: ["October", "November", "December"],
-                scheduleType: "span",
-                scheduleLabel: "Oct – Dec",
-                ganttPosition: { months: ["October", "November", "December"], isSpan: true }
+                scheduleLabel: "Oct – Dec"
             },
             {
                 id: "10",
                 title: "MOA with Pantawid Program",
                 category: "Partnerships",
+                refCode: "Ref: 1.3.2",
+                referenceDetail: "Three batches of three-day Training of Trainers to 120 Violence against Women and Children (VAWC) officers and parents on personal, digital safety and literacy from 12 barangays in Dipolog, Roxas and Liloy.",
+                participants: "120 VAWC Officers and Parents (12 Barangays)",
+                locations: "Dipolog, Roxas, Liloy (12 Barangays)",
+                budget: 828000.00,
+                budgetFormula: null,
+                costBreakdown: [
+                    { item: "Training of Trainers to 120 VAWC Officers & Parents", amount: 828000.00 }
+                ],
                 process: "Coordination meeting with the concerned DSWD/Pantawid office → identification of areas for collaboration → consultation on awareness campaigns and Personal Safety Lessons → drafting of the MOA → legal and technical review → negotiation of responsibilities and commitments → signing and implementation",
-                output: "Draft or signed MOA and agreed implementation arrangements",
+                output: "Draft or signed MOA and agreed implementation arrangements; 120 VAWC officers & parents trained",
                 months: ["October", "November"],
-                scheduleType: "span",
-                scheduleLabel: "Oct – Nov",
-                ganttPosition: { months: ["October", "November"], isSpan: true }
+                scheduleLabel: "Oct – Nov"
             },
             {
                 id: "10A",
                 title: "TWG Meeting with CSWD",
                 category: "Partnerships",
+                refCode: "Ref: TWG",
+                referenceDetail: "Technical Working Group meetings with CSWD and relevant inter-agency stakeholders to establish roles, referral pathways, operational gaps, and service coordination.",
+                participants: "CSWD & Inter-Agency TWG Members",
+                locations: "CSWD Offices / LGU Halls",
+                budget: 0,
+                budgetFormula: null,
+                costBreakdown: [
+                    { item: "CSWD TWG Meeting Allocation", amount: 0 }
+                ],
                 process: "Preparation of agenda and technical documents → meeting with CSWD and relevant TWG members → discussion of roles, referral pathways, and service coordination → identification of operational gaps → agreement on action points → documentation and follow-up",
                 output: "TWG minutes, assigned responsibilities, and action points",
                 months: ["October", "November"],
-                scheduleType: "span",
-                scheduleLabel: "Oct – Nov",
-                ganttPosition: { months: ["October", "November"], isSpan: true }
+                scheduleLabel: "Oct – Nov"
             },
             {
                 id: "10B",
                 title: "Consultation with Barangay Captains",
                 category: "Community",
+                refCode: "Ref: Barangay",
+                referenceDetail: "Consultation meetings with barangay captains across target municipalities to clarify local responsibilities, ordinance implementation mechanisms, and project commitments.",
+                participants: "Barangay Captains & Local Leaders",
+                locations: "Target Municipalities",
+                budget: 0,
+                budgetFormula: null,
+                costBreakdown: [
+                    { item: "Barangay Consultation Allocation", amount: 0 }
+                ],
                 process: "Preparation of consultation materials → coordination with municipal/city LGUs → consultation meeting with barangay captains → discussion of barangay responsibilities and ordinance implementation → gathering of recommendations → documentation and follow-up",
                 output: "Consultation records and barangay-level commitments",
                 months: ["October", "November"],
-                scheduleType: "span",
-                scheduleLabel: "Oct – Nov",
-                ganttPosition: { months: ["October", "November"], isSpan: true }
+                scheduleLabel: "Oct – Nov"
             },
             {
                 id: "11",
                 title: "Barangay Dissemination of the Ordinance",
                 category: "Community",
+                refCode: "Ref: Ordinance Briefs",
+                referenceDetail: "Barangay orientations and dissemination meetings using simplified briefs on Anti-OSAEC ordinance provisions and referral mechanisms.",
+                participants: "Barangay Officials & Stakeholders",
+                locations: "12 Barangays",
+                budget: 75000.00,
+                budgetFormula: null,
+                costBreakdown: [
+                    { item: "Barangay Ordinance Dissemination", amount: 75000.00 }
+                ],
                 process: "Coordination with barangay officials → preparation of simplified ordinance briefs and presentation materials → barangay orientation or dissemination meeting → discussion of key provisions, referral mechanisms, and responsibilities → collection of feedback → documentation of dissemination",
                 output: "Barangay officials and stakeholders oriented on the ordinance",
                 months: ["October"],
-                scheduleType: "span",
-                scheduleLabel: "October",
-                ganttPosition: { months: ["October"], isSpan: true }
+                scheduleLabel: "October"
             },
             {
                 id: "11A",
                 title: "FGD with Children for Meaningful Child Participation",
                 category: "Community",
+                refCode: "Ref: FGD Child",
+                referenceDetail: "Ethical focus group discussions with children in child-friendly settings to gather recommendations and foster child-led inputs into project design.",
+                participants: "Children & Facilitators",
+                locations: "Community Centers / Child-friendly Venues",
+                budget: 0,
+                budgetFormula: null,
+                costBreakdown: [
+                    { item: "Child FGD Allocation", amount: 0 }
+                ],
                 process: "Child safeguarding and ethical planning → coordination with child participation facilitators → age-appropriate preparation and informed consent/assent procedures → focus group discussions in a safe, child-friendly setting → analysis of children's views and recommendations → feedback to participants on how their inputs informed planning",
                 output: "Documented children's recommendations and evidence of meaningful child participation",
                 months: ["October", "November"],
-                scheduleType: "span",
-                scheduleLabel: "Oct – Nov",
-                ganttPosition: { months: ["October", "November"], isSpan: true }
+                scheduleLabel: "Oct – Nov"
             }
         ];
 
         let filteredData = [...activitiesData];
+
+        function formatCurrency(amount) {
+            return "₱" + Number(amount).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function updateFinancialStats() {
+            const totalAll = activitiesData.reduce((sum, item) => sum + item.budget, 0);
+
+            let maxItem = activitiesData[0];
+            activitiesData.forEach(item => {
+                if (item.budget > maxItem.budget) maxItem = item;
+            });
+
+            const fundedCount = activitiesData.filter(i => i.budget > 0).length;
+            const totalFiltered = filteredData.reduce((sum, item) => sum + item.budget, 0);
+
+            document.getElementById('statTotalBudget').innerText = formatCurrency(totalAll);
+            document.getElementById('statMaxBudget').innerText = maxItem.title;
+            document.getElementById('statMaxVal').innerText = formatCurrency(maxItem.budget);
+            document.getElementById('statFundedCount').innerText = `${fundedCount} / ${activitiesData.length}`;
+
+            document.getElementById('statFilteredCount').innerText = `${filteredData.length} activities shown`;
+            document.getElementById('statFilteredBudget').innerText = formatCurrency(totalFiltered);
+            document.getElementById('visibleBudgetSum').innerText = formatCurrency(totalFiltered);
+
+            const matrixTotalElem = document.getElementById('matrixTotalBudget');
+            if (matrixTotalElem) matrixTotalElem.innerText = formatCurrency(totalFiltered);
+        }
 
         function renderGanttView() {
             const container = document.getElementById('ganttRowsContainer');
             container.innerHTML = '';
 
             if (filteredData.length === 0) {
-                container.innerHTML = `<div class="p-8 text-center text-slate-400 text-xs">No activities match the search filter criteria.</div>`;
+                container.innerHTML = `<div class="p-8 text-center text-slate-400 text-xs">No activities match the search filter.</div>`;
                 return;
             }
 
@@ -478,66 +681,67 @@
                 const isDec = item.months.includes("December");
 
                 let octCell = `<div class="col-span-2 border-l border-slate-100 dark:border-slate-700/50 p-2 flex items-center justify-center"></div>`;
-                let novCell = `<div class="col-span-2 border-l border-slate-100 dark:border-slate-700/50 p-2 flex items-center justify-center"></div>`;
+                let novCell = `<div class="col-span-1 border-l border-slate-100 dark:border-slate-700/50 p-2 flex items-center justify-center"></div>`;
                 let decCell = `<div class="col-span-2 border-l border-slate-100 dark:border-slate-700/50 p-2 flex items-center justify-center"></div>`;
 
-                // Render specific activity markers vs continuous bars
                 if (item.id === "1") {
-                    // Police Training - Nov 9-12
                     novCell = `
-                        <div class="col-span-2 border-l border-slate-100 dark:border-slate-700/50 p-1.5 flex items-center justify-center">
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700 shadow-xs">
-                                <i class="fa-solid fa-diamond text-amber-600 dark:text-amber-400 text-[10px]"></i> Nov 9–12
+                        <div class="col-span-1 border-l border-slate-100 dark:border-slate-700/50 p-1 flex items-center justify-center">
+                            <span class="inline-flex items-center gap-1 px-2 py-1 rounded text-[11px] font-medium bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700 shadow-xs whitespace-nowrap">
+                                <i class="fa-solid fa-diamond text-amber-600 dark:text-amber-400 text-[9px]"></i> Nov 9–12
                             </span>
                         </div>`;
                 } else if (item.id === "2") {
-                    // KTCAP Training - Dec 2-4
                     decCell = `
                         <div class="col-span-2 border-l border-slate-100 dark:border-slate-700/50 p-1.5 flex items-center justify-center">
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700 shadow-xs">
-                                <i class="fa-solid fa-diamond text-amber-600 dark:text-amber-400 text-[10px]"></i> Dec 2–4
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700 shadow-xs">
+                                <i class="fa-solid fa-diamond text-amber-600 dark:text-amber-400 text-[9px]"></i> Dec 2–4
                             </span>
                         </div>`;
                 } else if (item.id === "4") {
-                    // Stakeholders' Meeting - Dec Week 2
                     decCell = `
                         <div class="col-span-2 border-l border-slate-100 dark:border-slate-700/50 p-1.5 flex items-center justify-center">
-                            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-md text-xs font-medium bg-indigo-600 text-white shadow-xs">
+                            <span class="inline-flex items-center gap-1 px-3 py-1 rounded text-xs font-medium bg-indigo-600 text-white shadow-xs">
                                 <i class="fa-solid fa-square text-[8px]"></i> Week 2
                             </span>
                         </div>`;
                 } else {
-                    // Standard Implementation Span
                     if (isOct) {
                         octCell = `
                             <div class="col-span-2 border-l border-slate-100 dark:border-slate-700/50 p-2 flex items-center justify-center">
-                                <div class="w-full h-3.5 rounded ${colors.bar} opacity-90 hover:opacity-100 transition-opacity flex items-center justify-center shadow-xs" title="October Implementation"></div>
+                                <div class="w-full h-3.5 rounded ${colors.bar} opacity-90 hover:opacity-100 transition-opacity flex items-center justify-center shadow-xs" title="October"></div>
                             </div>`;
                     }
                     if (isNov) {
                         novCell = `
-                            <div class="col-span-2 border-l border-slate-100 dark:border-slate-700/50 p-2 flex items-center justify-center">
-                                <div class="w-full h-3.5 rounded ${colors.bar} opacity-90 hover:opacity-100 transition-opacity flex items-center justify-center shadow-xs" title="November Implementation"></div>
+                            <div class="col-span-1 border-l border-slate-100 dark:border-slate-700/50 p-2 flex items-center justify-center">
+                                <div class="w-full h-3.5 rounded ${colors.bar} opacity-90 hover:opacity-100 transition-opacity flex items-center justify-center shadow-xs" title="November"></div>
                             </div>`;
                     }
                     if (isDec) {
                         decCell = `
                             <div class="col-span-2 border-l border-slate-100 dark:border-slate-700/50 p-2 flex items-center justify-center">
-                                <div class="w-full h-3.5 rounded ${colors.bar} opacity-90 hover:opacity-100 transition-opacity flex items-center justify-center shadow-xs" title="December Implementation"></div>
+                                <div class="w-full h-3.5 rounded ${colors.bar} opacity-90 hover:opacity-100 transition-opacity flex items-center justify-center shadow-xs" title="December"></div>
                             </div>`;
                     }
                 }
 
+                const budgetDisplay = item.budget > 0 ? formatCurrency(item.budget) : '<span class="text-slate-400 font-normal">₱0.00</span>';
+
                 const rowHtml = `
-                    <div onclick="openModal('${item.id}')" class="grid grid-cols-12 items-center hover:bg-slate-50/80 dark:hover:bg-slate-700/30 transition-colors cursor-pointer group py-2 px-4">
+                    <div onclick="openModal('${item.id}')" class="grid grid-cols-12 items-center hover:bg-slate-50/80 dark:hover:bg-slate-700/30 transition-colors cursor-pointer group py-2.5 px-4">
                         <div class="col-span-1 text-center font-bold">
                             <span class="inline-block px-2 py-0.5 rounded text-xs ${colors.badge}">${item.id}</span>
                         </div>
-                        <div class="col-span-5 pr-2">
+                        <div class="col-span-4 pr-2">
                             <h4 class="font-semibold text-slate-800 dark:text-slate-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors text-xs leading-snug">
                                 ${item.title}
                             </h4>
                             <p class="text-[11px] text-slate-400 truncate mt-0.5">${item.category}</p>
+                        </div>
+                        <div class="col-span-2 text-right font-extrabold text-xs pr-3 text-slate-900 dark:text-slate-100">
+                            ${budgetDisplay}
+                            ${item.budgetFormula ? `<div class="text-[10px] text-indigo-500 font-normal">${item.budgetFormula}</div>` : ''}
                         </div>
                         ${octCell}
                         ${novCell}
@@ -553,7 +757,7 @@
             tableBody.innerHTML = '';
 
             if (filteredData.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400 text-xs">No activities match the search filter criteria.</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400 text-xs">No activities match search filter.</td></tr>`;
                 return;
             }
 
@@ -561,29 +765,40 @@
                 const colors = activityColors[item.id] || activityColors["1"];
                 const processSteps = item.process.split(' → ');
 
+                const budgetDisplay = item.budget > 0 
+                    ? `<span class="inline-block px-2 py-1 rounded bg-slate-100 dark:bg-slate-700/80 text-emerald-700 dark:text-emerald-300 font-extrabold">${formatCurrency(item.budget)}</span>`
+                    : `<span class="inline-block px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-400 font-normal">₱0.00</span>`;
+
                 const rowHtml = `
                     <tr onclick="openModal('${item.id}')" class="hover:bg-slate-50 dark:hover:bg-slate-700/40 cursor-pointer transition-colors">
-                        <td class="py-3 px-4 text-center align-top font-bold">
+                        <td class="py-3.5 px-4 text-center align-top font-bold">
                             <span class="inline-block px-2 py-0.5 rounded text-xs ${colors.badge}">${item.id}</span>
                         </td>
-                        <td class="py-3 px-4 align-top">
+                        <td class="py-3.5 px-4 align-top">
                             <div class="font-bold text-slate-900 dark:text-white leading-snug">${item.title}</div>
+                            <div class="text-[10px] font-semibold text-indigo-600 dark:text-indigo-400 mt-0.5">${item.refCode || ''}</div>
                         </td>
-                        <td class="py-3 px-4 align-top">
+                        <td class="py-3.5 px-4 align-top">
                             <span class="inline-block px-2 py-0.5 text-[11px] font-medium rounded-full ${colors.bg} ${colors.text} border ${colors.border}">
                                 ${item.category}
                             </span>
                         </td>
-                        <td class="py-3 px-4 align-top text-slate-600 dark:text-slate-300">
-                            <ol class="list-decimal list-inside space-y-1">
-                                ${processSteps.slice(0, 3).map(step => `<li class="truncate max-w-md">${step}</li>`).join('')}
-                                ${processSteps.length > 3 ? `<li class="text-indigo-600 dark:text-indigo-400 font-medium text-[11px] list-none">+ ${processSteps.length - 3} more key steps...</li>` : ''}
+                        <td class="py-3.5 px-4 align-top text-right">
+                            ${budgetDisplay}
+                            ${item.budgetFormula ? `<div class="text-[10px] font-semibold text-indigo-600 dark:text-indigo-400 mt-1">${item.budgetFormula}</div>` : ''}
+                            ${item.note ? `<div class="text-[10px] text-amber-700 dark:text-amber-400 font-medium italic mt-0.5">${item.note}</div>` : ''}
+                        </td>
+                        <td class="py-3.5 px-4 align-top text-slate-600 dark:text-slate-300">
+                            ${item.referenceDetail ? `<div class="mb-2 p-2 bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded text-[11px] text-amber-900 dark:text-amber-200 font-medium whitespace-pre-line">${item.referenceDetail}</div>` : ''}
+                            <ol class="list-decimal list-inside space-y-1 text-[11px]">
+                                ${processSteps.slice(0, 2).map(step => `<li class="truncate max-w-md">${step}</li>`).join('')}
+                                ${processSteps.length > 2 ? `<li class="text-indigo-600 dark:text-indigo-400 font-medium text-[10px] list-none">+ ${processSteps.length - 2} more steps...</li>` : ''}
                             </ol>
                         </td>
-                        <td class="py-3 px-4 align-top text-slate-700 dark:text-slate-300 font-medium">
+                        <td class="py-3.5 px-4 align-top text-slate-700 dark:text-slate-300 font-medium">
                             ${item.output}
                         </td>
-                        <td class="py-3 px-4 align-top text-center">
+                        <td class="py-3.5 px-4 align-top text-center">
                             <span class="inline-block px-2.5 py-1 rounded text-[11px] font-semibold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-600">
                                 ${item.scheduleLabel}
                             </span>
@@ -599,39 +814,54 @@
             grid.innerHTML = '';
 
             if (filteredData.length === 0) {
-                grid.innerHTML = `<div class="col-span-full p-8 text-center text-slate-400 text-xs">No activities match the search filter criteria.</div>`;
+                grid.innerHTML = `<div class="col-span-full p-8 text-center text-slate-400 text-xs">No activities match search filter.</div>`;
                 return;
             }
 
             filteredData.forEach(item => {
                 const colors = activityColors[item.id] || activityColors["1"];
-                const processSteps = item.process.split(' → ');
 
                 const cardHtml = `
                     <div onclick="openModal('${item.id}')" class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-5 shadow-xs hover:shadow-md transition-all cursor-pointer flex flex-col justify-between group hover:border-indigo-300 dark:hover:border-indigo-600">
                         <div class="space-y-3">
                             <div class="flex items-start justify-between gap-2">
-                                <span class="px-2.5 py-0.5 rounded text-xs font-bold ${colors.badge}">${item.id}</span>
+                                <div class="flex items-center gap-1.5">
+                                    <span class="px-2.5 py-0.5 rounded text-xs font-bold ${colors.badge}">${item.id}</span>
+                                    <span class="text-[10px] font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 px-1.5 py-0.5 rounded">${item.refCode || ''}</span>
+                                </div>
                                 <span class="px-2 py-0.5 text-[10px] font-semibold rounded-full ${colors.bg} ${colors.text} border ${colors.border}">
                                     ${item.category}
                                 </span>
                             </div>
 
-                            <h3 class="font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors leading-snug">
-                                ${item.title}
-                            </h3>
-
-                            <div class="text-xs text-slate-600 dark:text-slate-300 space-y-1.5">
-                                <div class="font-semibold text-slate-500 dark:text-slate-400 text-[11px] uppercase tracking-wider">Process Highlights:</div>
-                                <p class="line-clamp-3 text-slate-500 dark:text-slate-400 leading-relaxed">
-                                    ${item.process}
-                                </p>
+                            <div class="flex items-start justify-between gap-2">
+                                <h3 class="font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors leading-snug">
+                                    ${item.title}
+                                </h3>
+                                <div class="text-right flex-shrink-0">
+                                    <span class="text-xs font-extrabold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-1 rounded-md border border-emerald-100 dark:border-emerald-900/40">
+                                        ${formatCurrency(item.budget)}
+                                    </span>
+                                    ${item.budgetFormula ? `<div class="text-[9px] font-semibold text-indigo-600 mt-1">${item.budgetFormula}</div>` : ''}
+                                </div>
                             </div>
+
+                            ${item.note ? `
+                                <div class="p-2 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded text-xs font-semibold text-amber-900 dark:text-amber-200">
+                                    <i class="fa-solid fa-circle-exclamation mr-1"></i> ${item.note}
+                                </div>
+                            ` : ''}
+
+                            ${item.referenceDetail ? `
+                                <div class="p-2.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-medium whitespace-pre-line">
+                                    ${item.referenceDetail}
+                                </div>
+                            ` : ''}
                         </div>
 
                         <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between text-xs">
-                            <span class="text-emerald-700 dark:text-emerald-400 font-medium truncate max-w-[180px]" title="${item.output}">
-                                <i class="fa-solid fa-check-circle mr-1"></i> Output Ready
+                            <span class="text-slate-500 dark:text-slate-400 text-[11px] truncate max-w-[170px]" title="${item.output}">
+                                <i class="fa-solid fa-check-circle text-emerald-500 mr-1"></i> ${item.output}
                             </span>
                             <span class="font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded">
                                 ${item.scheduleLabel}
@@ -652,13 +882,66 @@
             document.getElementById('modalBadge').className = `px-2.5 py-1 rounded-lg text-xs font-bold ${colors.badge}`;
             document.getElementById('modalBadge').innerText = item.id;
             document.getElementById('modalTitle').innerText = item.title;
-            document.getElementById('modalCategory').innerText = item.category + " Activity Domain";
+            document.getElementById('modalCategory').innerText = item.category + " Domain • " + (item.refCode || '');
             document.getElementById('modalSchedule').innerText = item.scheduleLabel + " (" + item.months.join(', ') + ")";
+            document.getElementById('modalBudgetValue').innerText = formatCurrency(item.budget);
 
-            // Format steps with clean icons
+            // Populate Budget Breakdown Items & Notes
+            const budgetItemsContainer = document.getElementById('modalBudgetItems');
+            let breakdownHtml = '';
+
+            if (item.budgetFormula) {
+                breakdownHtml += `
+                    <div class="p-2 rounded bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800 text-indigo-900 dark:text-indigo-200 font-semibold mb-2">
+                        Formula: ${item.budgetFormula}
+                    </div>
+                `;
+            }
+
+            if (item.note) {
+                breakdownHtml += `
+                    <div class="p-2 rounded bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200 font-medium mb-2">
+                        <i class="fa-solid fa-note-sticky mr-1"></i> Note: ${item.note}
+                    </div>
+                `;
+            }
+
+            if (item.costBreakdown && item.costBreakdown.length > 0) {
+                breakdownHtml += item.costBreakdown.map(cb => `
+                    <div class="flex items-center justify-between py-1 border-b border-emerald-100 dark:border-emerald-900/30 last:border-0">
+                        <span class="font-medium text-emerald-950 dark:text-emerald-200"><i class="fa-solid fa-angle-right text-emerald-500 mr-1.5 text-[10px]"></i>${cb.item}</span>
+                        <span class="font-bold text-emerald-700 dark:text-emerald-300 ml-2">${formatCurrency(cb.amount)}</span>
+                    </div>
+                `).join('');
+            }
+
+            budgetItemsContainer.innerHTML = breakdownHtml || `<p class="text-xs text-slate-400 italic">No budget formula or notes attached.</p>`;
+
+            // Reference Detail Block
+            let refBlockHtml = '';
+            if (item.referenceDetail) {
+                refBlockHtml = `
+                    <div class="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-xl p-3.5 space-y-2">
+                        <div class="flex items-center gap-1.5 text-xs font-bold text-amber-800 dark:text-amber-300 uppercase tracking-wider">
+                            <i class="fa-solid fa-bookmark text-amber-600"></i> Reference & Target Scope
+                        </div>
+                        <p class="text-xs text-amber-900 dark:text-amber-200 leading-relaxed whitespace-pre-line font-medium">
+                            ${item.referenceDetail}
+                        </p>
+                        ${item.participants ? `
+                            <div class="pt-2 border-t border-amber-200/60 dark:border-amber-800/60 flex flex-wrap gap-2 text-[11px]">
+                                <span class="bg-amber-100 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200 px-2 py-0.5 rounded font-semibold"><i class="fa-solid fa-users mr-1"></i> Target: ${item.participants}</span>
+                                <span class="bg-amber-100 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200 px-2 py-0.5 rounded font-semibold"><i class="fa-solid fa-map-pin mr-1"></i> ${item.locations}</span>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }
+
+            // Steps
             const steps = item.process.split(' → ');
             const stepsContainer = document.getElementById('modalSteps');
-            stepsContainer.innerHTML = steps.map((step, idx) => `
+            stepsContainer.innerHTML = refBlockHtml + steps.map((step, idx) => `
                 <div class="flex items-start gap-3 p-2.5 rounded-lg bg-slate-50 dark:bg-slate-900/40 border border-slate-100 dark:border-slate-700/50">
                     <span class="flex-shrink-0 w-5 h-5 rounded-full ${colors.bar} text-white font-bold text-[10px] flex items-center justify-center mt-0.5">
                         ${idx + 1}
@@ -686,7 +969,6 @@
             const btnMatrix = document.getElementById('btnViewMatrix');
             const btnCards = document.getElementById('btnViewCards');
 
-            // Reset classes
             [btnGantt, btnMatrix, btnCards].forEach(btn => {
                 btn.className = "px-3 py-1.5 rounded-md text-xs font-semibold flex items-center gap-1.5 transition-all text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white";
             });
@@ -713,12 +995,14 @@
             const query = document.getElementById('searchInput').value.toLowerCase().trim();
             const category = document.getElementById('categoryFilter').value;
             const month = document.getElementById('monthFilter').value;
+            const sortBy = document.getElementById('sortByFilter').value;
 
             filteredData = activitiesData.filter(item => {
                 const matchesQuery = item.title.toLowerCase().includes(query) ||
                                      item.process.toLowerCase().includes(query) ||
                                      item.output.toLowerCase().includes(query) ||
-                                     item.id.toLowerCase().includes(query);
+                                     item.id.toLowerCase().includes(query) ||
+                                     (item.note && item.note.toLowerCase().includes(query));
 
                 const matchesCategory = category === 'ALL' || item.category === category;
                 const matchesMonth = month === 'ALL' || item.months.includes(month);
@@ -726,8 +1010,21 @@
                 return matchesQuery && matchesCategory && matchesMonth;
             });
 
+            // Sorting
+            if (sortBy === 'BUDGET_DESC') {
+                filteredData.sort((a, b) => b.budget - a.budget);
+            } else if (sortBy === 'BUDGET_ASC') {
+                filteredData.sort((a, b) => a.budget - b.budget);
+            } else if (sortBy === 'TITLE_ASC') {
+                filteredData.sort((a, b) => a.title.localeCompare(b.title));
+            } else {
+                const idOrder = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "10A", "10B", "11", "11A"];
+                filteredData.sort((a, b) => idOrder.indexOf(a.id) - idOrder.indexOf(b.id));
+            }
+
             document.getElementById('visibleCount').innerText = filteredData.length;
 
+            updateFinancialStats();
             renderGanttView();
             renderMatrixView();
             renderCardsView();
@@ -745,7 +1042,6 @@
             }
         }
 
-        // Close modal on escape key or outside click
         window.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') closeModal();
         });
@@ -754,8 +1050,8 @@
             if (e.target.id === 'activityModal') closeModal();
         });
 
-        // Initialize view on page load
         window.onload = function() {
+            updateFinancialStats();
             renderGanttView();
             renderMatrixView();
             renderCardsView();
