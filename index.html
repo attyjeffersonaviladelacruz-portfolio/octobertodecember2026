@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Activity Matrix & Gantt Chart</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .dark ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="h-full text-slate-800 dark:text-slate-100 dark:bg-slate-900 transition-colors duration-200">
+
+    <div id="app" class="min-h-screen flex flex-col">
+        <!-- Header / Navigation Banner -->
+        <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-20 shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="bg-indigo-600 text-white p-2.5 rounded-xl shadow-md shadow-indigo-200 dark:shadow-none">
+                            <i class="fa-solid fa-chart-gantt text-xl"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-xl font-bold text-slate-900 dark:text-white leading-tight">Project Activity Matrix & Gantt Chart</h1>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Implementation Plan • Q4 (October – December)</p>
+                        </div>
+                    </div>
+
+                    <!-- View Toggle & Quick Actions -->
+                    <div class="flex flex-wrap items-center gap-2">
+                        <div class="bg-slate-100 dark:bg-slate-700 p-1 rounded-lg flex items-center border border-slate-200 dark:border-slate-600">
+                            <button id="btnViewGantt" onclick="switchView('gantt')" class="px-3 py-1.5 rounded-md text-xs font-semibold flex items-center gap-1.5 transition-all bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-sm">
+                                <i class="fa-solid fa-chart-column"></i>
+                                <span>Gantt Chart</span>
+                            </button>
+                            <button id="btnViewMatrix" onclick="switchView('matrix')" class="px-3 py-1.5 rounded-md text-xs font-semibold flex items-center gap-1.5 transition-all text-slate-600 dark:text-slate-300 hover:text-slate-900">
+                                <i class="fa-solid fa-table-list"></i>
+                                <span>Matrix View</span>
+                            </button>
+                            <button id="btnViewCards" onclick="switchView('cards')" class="px-3 py-1.5 rounded-md text-xs font-semibold flex items-center gap-1.5 transition-all text-slate-600 dark:text-slate-300 hover:text-slate-900">
+                                <i class="fa-solid fa-grip"></i>
+                                <span>Cards</span>
+                            </button>
+                        </div>
+
+                        <button onclick="toggleDarkMode()" class="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors" title="Toggle Theme">
+                            <i id="themeIcon" class="fa-solid fa-moon"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+            <!-- Search & Filter Controls -->
+            <section class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
+                    <!-- Search Input -->
+                    <div class="relative md:col-span-5">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="text" id="searchInput" oninput="applyFilters()" placeholder="Search activities, steps, outputs..." class="w-full pl-9 pr-4 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white">
+                    </div>
+
+                    <!-- Category Filter -->
+                    <div class="md:col-span-4">
+                        <select id="categoryFilter" onchange="applyFilters()" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white">
+                            <option value="ALL">All Categories / Domains</option>
+                            <option value="Training">Capacity Building & Training</option>
+                            <option value="Community">Community Education & Advocacy</option>
+                            <option value="Governance/Policy">Governance, Policy & Legislation</option>
+                            <option value="Case Management">Surveillance & Case Management</option>
+                            <option value="Partnerships">Inter-Agency Partnerships & TWG</option>
+                        </select>
+                    </div>
+
+                    <!-- Month Filter -->
+                    <div class="md:col-span-3">
+                        <select id="monthFilter" onchange="applyFilters()" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white">
+                            <option value="ALL">All Timeline Months</option>
+                            <option value="October">October Active</option>
+                            <option value="November">November Active</option>
+                            <option value="December">December Active</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Stats summary chips -->
+                <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100 dark:border-slate-700 text-xs text-slate-500">
+                    <div class="flex items-center gap-3">
+                        <span>Showing <strong id="visibleCount" class="text-indigo-600 dark:text-indigo-400">14</strong> of 14 activities</span>
+                        <span class="hidden sm:inline">•</span>
+                        <span class="hidden sm:inline">Active Window: <strong>Oct – Dec</strong></span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 font-medium border border-emerald-200 dark:border-emerald-800">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Specific Dates (◆)
+                        </span>
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-medium border border-indigo-200 dark:border-indigo-800">
+                            <span class="w-2 h-2 rounded-full bg-indigo-500"></span> Implementation Span (■)
+                        </span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 1: GANTT CHART VIEW -->
+            <section id="ganttView" class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                <div class="p-4 border-b border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-2 bg-slate-50/50 dark:bg-slate-800/50">
+                    <h2 class="text-sm font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+                        <i class="fa-solid fa-timeline text-indigo-500"></i>
+                        Gantt Implementation Schedule
+                    </h2>
+                    <div class="flex items-center gap-3 text-xs text-slate-500">
+                        <span class="flex items-center gap-1"><span class="font-semibold text-slate-700 dark:text-slate-300">Legend:</span></span>
+                        <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-indigo-500 inline-block"></span> Scheduled implementation</span>
+                        <span class="flex items-center gap-1"><i class="fa-solid fa-diamond text-amber-500 text-[10px]"></i> Specific activity milestone</span>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <div class="min-w-[760px]">
+                        <!-- Gantt Table Header -->
+                        <div class="grid grid-cols-12 bg-slate-100 dark:bg-slate-700/60 text-xs font-semibold text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 py-2.5 px-4">
+                            <div class="col-span-1 text-center">No.</div>
+                            <div class="col-span-5">Activity Title</div>
+                            <div class="col-span-2 text-center border-l border-slate-200 dark:border-slate-600">October</div>
+                            <div class="col-span-2 text-center border-l border-slate-200 dark:border-slate-600">November</div>
+                            <div class="col-span-2 text-center border-l border-slate-200 dark:border-slate-600">December</div>
+                        </div>
+
+                        <!-- Gantt Table Body -->
+                        <div id="ganttRowsContainer" class="divide-y divide-slate-100 dark:divide-slate-700/50">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 2: MATRIX TABLE VIEW -->
+            <section id="matrixView" class="hidden bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                <div class="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50">
+                    <h2 class="text-sm font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+                        <i class="fa-solid fa-table text-indigo-500"></i>
+                        Comprehensive Activity Matrix
+                    </h2>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse min-w-[900px]">
+                        <thead>
+                            <tr class="bg-slate-100 dark:bg-slate-700/60 text-xs font-semibold text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700">
+                                <th class="py-3 px-4 w-16 text-center">No.</th>
+                                <th class="py-3 px-4 w-52">Activity Title</th>
+                                <th class="py-3 px-4 w-32">Category</th>
+                                <th class="py-3 px-4">Proposed Process / Key Steps</th>
+                                <th class="py-3 px-4 w-64">Expected Output</th>
+                                <th class="py-3 px-4 w-28 text-center">Timeline</th>
+                            </tr>
+                        </thead>
+                        <tbody id="matrixTableBody" class="divide-y divide-slate-100 dark:divide-slate-700/50 text-xs">
+                            <!-- Injected dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- VIEW 3: CARDS VIEW -->
+            <section id="cardsView" class="hidden">
+                <div id="cardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Injected dynamically -->
+                </div>
+            </section>
+
+            <!-- Planning Note Footer -->
+            <div class="bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/50 rounded-xl p-4 text-xs text-indigo-900 dark:text-indigo-200 flex items-start gap-3">
+                <i class="fa-solid fa-circle-info text-indigo-500 mt-0.5 text-base"></i>
+                <div>
+                    <strong class="font-semibold">Planning note:</strong> The schedule for activities without specific day dates is proposed based on the quarterly implementation timeframe (October to December). Click on any item row or Gantt bar to inspect full process workflows and target outputs.
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Detailed Modal Window -->
+    <div id="activityModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden transform transition-all">
+            
+            <!-- Modal Header -->
+            <div id="modalHeader" class="p-5 border-b border-slate-200 dark:border-slate-700 flex items-start justify-between gap-4">
+                <div class="flex items-start gap-3">
+                    <span id="modalBadge" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-200">
+                        1
+                    </span>
+                    <div>
+                        <h3 id="modalTitle" class="text-lg font-bold text-slate-900 dark:text-white leading-snug">
+                            Activity Title
+                        </h3>
+                        <p id="modalCategory" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                            Category Tag
+                        </p>
+                    </div>
+                </div>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-lg transition-colors">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Modal Content Body -->
+            <div class="p-6 overflow-y-auto space-y-6 text-sm">
+                
+                <!-- Schedule Tag -->
+                <div class="bg-slate-50 dark:bg-slate-900/60 p-3 rounded-xl border border-slate-100 dark:border-slate-700 flex items-center justify-between">
+                    <span class="text-xs text-slate-500 dark:text-slate-400 font-medium"><i class="fa-regular fa-calendar-check mr-1.5"></i> Scheduled Period</span>
+                    <span id="modalSchedule" class="text-xs font-bold text-slate-800 dark:text-slate-200 bg-white dark:bg-slate-800 px-3 py-1 rounded-md border border-slate-200 dark:border-slate-700">
+                        Oct, Nov
+                    </span>
+                </div>
+
+                <!-- Proposed Process Steps -->
+                <div>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3 flex items-center gap-1.5">
+                        <i class="fa-solid fa-list-check text-indigo-500"></i>
+                        Proposed Process / Key Steps Flow
+                    </h4>
+                    <div id="modalSteps" class="space-y-2">
+                        <!-- Step items dynamically populated -->
+                    </div>
+                </div>
+
+                <!-- Expected Output -->
+                <div>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 flex items-center gap-1.5">
+                        <i class="fa-solid fa-bullseye text-emerald-500"></i>
+                        Expected Output
+                    </h4>
+                    <div id="modalOutput" class="p-3.5 bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60 rounded-xl text-emerald-900 dark:text-emerald-200 text-xs leading-relaxed font-medium">
+                        <!-- Output details dynamically populated -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="p-4 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-700 flex justify-end">
+                <button onclick="closeModal()" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 text-xs font-semibold rounded-lg transition-colors">
+                    Close Details
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Color definitions for each activity badge/theme
+        const activityColors = {
+            "1": { bg: "bg-indigo-50 dark:bg-indigo-950/40", border: "border-indigo-200 dark:border-indigo-800", text: "text-indigo-700 dark:text-indigo-300", bar: "bg-indigo-500", badge: "bg-indigo-600 text-white" },
+            "2": { bg: "bg-blue-50 dark:bg-blue-950/40", border: "border-blue-200 dark:border-blue-800", text: "text-blue-700 dark:text-blue-300", bar: "bg-blue-500", badge: "bg-blue-600 text-white" },
+            "3": { bg: "bg-teal-50 dark:bg-teal-950/40", border: "border-teal-200 dark:border-teal-800", text: "text-teal-700 dark:text-teal-300", bar: "bg-teal-500", badge: "bg-teal-600 text-white" },
+            "4": { bg: "bg-amber-50 dark:bg-amber-950/40", border: "border-amber-200 dark:border-amber-800", text: "text-amber-700 dark:text-amber-300", bar: "bg-amber-500", badge: "bg-amber-600 text-white" },
+            "5": { bg: "bg-rose-50 dark:bg-rose-950/40", border: "border-rose-200 dark:border-rose-800", text: "text-rose-700 dark:text-rose-300", bar: "bg-rose-500", badge: "bg-rose-600 text-white" },
+            "6": { bg: "bg-purple-50 dark:bg-purple-950/40", border: "border-purple-200 dark:border-purple-800", text: "text-purple-700 dark:text-purple-300", bar: "bg-purple-500", badge: "bg-purple-600 text-white" },
+            "7": { bg: "bg-violet-50 dark:bg-violet-950/40", border: "border-violet-200 dark:border-violet-800", text: "text-violet-700 dark:text-violet-300", bar: "bg-violet-500", badge: "bg-violet-600 text-white" },
+            "8": { bg: "bg-emerald-50 dark:bg-emerald-950/40", border: "border-emerald-200 dark:border-emerald-800", text: "text-emerald-700 dark:text-emerald-300", bar: "bg-emerald-500", badge: "bg-emerald-600 text-white" },
+            "9": { bg: "bg-cyan-50 dark:bg-cyan-950/40", border: "border-cyan-200 dark:border-cyan-800", text: "text-cyan-700 dark:text-cyan-300", bar: "bg-cyan-500", badge: "bg-cyan-600 text-white" },
+            "10": { bg: "bg-sky-50 dark:bg-sky-950/40", border: "border-sky-200 dark:border-sky-800", text: "text-sky-700 dark:text-sky-300", bar: "bg-sky-500", badge: "bg-sky-600 text-white" },
+            "10A": { bg: "bg-fuchsia-50 dark:bg-fuchsia-950/40", border: "border-fuchsia-200 dark:border-fuchsia-800", text: "text-fuchsia-700 dark:text-fuchsia-300", bar: "bg-fuchsia-500", badge: "bg-fuchsia-600 text-white" },
+            "10B": { bg: "bg-orange-50 dark:bg-orange-950/40", border: "border-orange-200 dark:border-orange-800", text: "text-orange-700 dark:text-orange-300", bar: "bg-orange-500", badge: "bg-orange-600 text-white" },
+            "11": { bg: "bg-lime-50 dark:bg-lime-950/40", border: "border-lime-200 dark:border-lime-800", text: "text-lime-700 dark:text-lime-300", bar: "bg-lime-500", badge: "bg-lime-600 text-white" },
+            "11A": { bg: "bg-pink-50 dark:bg-pink-950/40", border: "border-pink-200 dark:border-pink-800", text: "text-pink-700 dark:text-pink-300", bar: "bg-pink-500", badge: "bg-pink-600 text-white" },
+        };
+
+        // Complete dataset for 14 project activities
+        const activitiesData = [
+            {
+                id: "1",
+                title: "Police Training",
+                category: "Training",
+                process: "Coordination meeting with the PNP Provincial Cyber Response Team → consultation with PNP ACG and participating LGUs → preparation and validation of training design and materials → confirmation of participants and venue → conduct of training, Nov. 9–12 → post-training evaluation and documentation",
+                output: "Trained police and social welfare personnel; training report",
+                months: ["November"],
+                scheduleType: "specific",
+                scheduleLabel: "◆ Nov 9–12",
+                ganttPosition: { month: "November", detail: "Nov 9–12", isSpecific: true }
+            },
+            {
+                id: "2",
+                title: "KTCAP Training",
+                category: "Training",
+                process: "Coordination with CSWD and the courts → identification of 30 court social workers handling cases → consultation on training needs → finalization of training design and materials → conduct of training, Dec. 2–4 → evaluation and action planning",
+                output: "30 trained court social workers; training report and action points",
+                months: ["December"],
+                scheduleType: "specific",
+                scheduleLabel: "◆ Dec 2–4",
+                ganttPosition: { month: "December", detail: "Dec 2–4", isSpecific: true }
+            },
+            {
+                id: "3",
+                title: "Community Development Materials",
+                category: "Community",
+                process: "Internal planning meeting → consultation with children, parents, teachers, and community stakeholders → drafting of IEC and awareness materials → technical and child-friendly review → validation with relevant stakeholders → revision, finalization, and reproduction",
+                output: "Validated community education and awareness materials",
+                months: ["October", "November", "December"],
+                scheduleType: "span",
+                scheduleLabel: "Oct – Dec",
+                ganttPosition: { months: ["October", "November", "December"], isSpan: true }
+            },
+            {
+                id: "4",
+                title: "Stakeholders’ Meeting",
+                category: "Partnerships",
+                process: "Preparation of stakeholder mapping and agenda → issuance of invitations → coordination meeting with participating agencies and LGUs → presentation of project updates and gaps → discussion of commitments and next steps → preparation of minutes and action plan",
+                output: "Stakeholder commitments and agreed action plan",
+                months: ["December"],
+                scheduleType: "span",
+                scheduleLabel: "Dec (Week 2)",
+                ganttPosition: { month: "December", detail: "Week 2", isSpecific: false }
+            },
+            {
+                id: "5",
+                title: "Reconstitution of MDT",
+                category: "Governance/Policy",
+                process: "Review of existing MDT composition and designation orders → coordination meeting with LGU and concerned agencies → consultation with PNP, CSWD/MSWDO, health, and other relevant offices → identification of representatives and alternates → preparation of reconstitution documents → endorsement and issuance of the appropriate order",
+                output: "Updated MDT membership and documented roles",
+                months: ["October", "November"],
+                scheduleType: "span",
+                scheduleLabel: "Oct – Nov",
+                ganttPosition: { months: ["October", "November"], isSpan: true }
+            },
+            {
+                id: "6",
+                title: "Memorandum Circular for KTCAP",
+                category: "Governance/Policy",
+                process: "Internal legal and technical meeting → review of KTCAP objectives and applicable policies → consultation with relevant court and social welfare stakeholders → drafting of the memorandum circular → legal and technical review → submission to the authorized issuing office for consideration",
+                output: "Draft memorandum circular ready for review and endorsement",
+                months: ["October", "November"],
+                scheduleType: "span",
+                scheduleLabel: "Oct – Nov",
+                ganttPosition: { months: ["October", "November"], isSpan: true }
+            },
+            {
+                id: "7",
+                title: "CASAGAL Concept Note",
+                category: "Governance/Policy",
+                process: "Internal project planning meeting → review of the proposed initiative and target beneficiaries → consultation with relevant stakeholders → identification of objectives, activities, and resource requirements → preparation of the concept note → internal review and finalization",
+                output: "Draft or finalized CASAGAL concept note",
+                months: ["October", "November"],
+                scheduleType: "span",
+                scheduleLabel: "Oct – Nov",
+                ganttPosition: { months: ["October", "November"], isSpan: true }
+            },
+            {
+                id: "8",
+                title: "Anti-OSAEC Ordinance",
+                category: "Governance/Policy",
+                process: "Review of existing ordinances and legal framework → consultation with LGUs and relevant agencies → drafting or revision of the ordinance → technical and legal review → consultation with barangay representatives and other stakeholders → presentation to the appropriate local legislative body → committee deliberation and legislative follow-up",
+                output: "Draft or revised ordinance, consultation records, and legislative action",
+                months: ["October", "November", "December"],
+                scheduleType: "span",
+                scheduleLabel: "Oct – Dec",
+                ganttPosition: { months: ["October", "November", "December"], isSpan: true }
+            },
+            {
+                id: "9",
+                title: "Counselling and Case Management for 24 OSAEC Survivors/Cases",
+                category: "Case Management",
+                process: "Case identification and referral → assessment of immediate safety and psychosocial needs → preparation or updating of individual case plans → counselling and case management → coordination with appropriate service providers → monitoring, documentation, and case review, subject to confidentiality and survivor-centred protocols",
+                output: "24 children/cases provided with appropriate counselling and case management services; updated case records",
+                months: ["October", "November", "December"],
+                scheduleType: "span",
+                scheduleLabel: "Oct – Dec",
+                ganttPosition: { months: ["October", "November", "December"], isSpan: true }
+            },
+            {
+                id: "10",
+                title: "MOA with Pantawid Program",
+                category: "Partnerships",
+                process: "Coordination meeting with the concerned DSWD/Pantawid office → identification of areas for collaboration → consultation on awareness campaigns and Personal Safety Lessons → drafting of the MOA → legal and technical review → negotiation of responsibilities and commitments → signing and implementation",
+                output: "Draft or signed MOA and agreed implementation arrangements",
+                months: ["October", "November"],
+                scheduleType: "span",
+                scheduleLabel: "Oct – Nov",
+                ganttPosition: { months: ["October", "November"], isSpan: true }
+            },
+            {
+                id: "10A",
+                title: "TWG Meeting with CSWD",
+                category: "Partnerships",
+                process: "Preparation of agenda and technical documents → meeting with CSWD and relevant TWG members → discussion of roles, referral pathways, and service coordination → identification of operational gaps → agreement on action points → documentation and follow-up",
+                output: "TWG minutes, assigned responsibilities, and action points",
+                months: ["October", "November"],
+                scheduleType: "span",
+                scheduleLabel: "Oct – Nov",
+                ganttPosition: { months: ["October", "November"], isSpan: true }
+            },
+            {
+                id: "10B",
+                title: "Consultation with Barangay Captains",
+                category: "Community",
+                process: "Preparation of consultation materials → coordination with municipal/city LGUs → consultation meeting with barangay captains → discussion of barangay responsibilities and ordinance implementation → gathering of recommendations → documentation and follow-up",
+                output: "Consultation records and barangay-level commitments",
+                months: ["October", "November"],
+                scheduleType: "span",
+                scheduleLabel: "Oct – Nov",
+                ganttPosition: { months: ["October", "November"], isSpan: true }
+            },
+            {
+                id: "11",
+                title: "Barangay Dissemination of the Ordinance",
+                category: "Community",
+                process: "Coordination with barangay officials → preparation of simplified ordinance briefs and presentation materials → barangay orientation or dissemination meeting → discussion of key provisions, referral mechanisms, and responsibilities → collection of feedback → documentation of dissemination",
+                output: "Barangay officials and stakeholders oriented on the ordinance",
+                months: ["October"],
+                scheduleType: "span",
+                scheduleLabel: "October",
+                ganttPosition: { months: ["October"], isSpan: true }
+            },
+            {
+                id: "11A",
+                title: "FGD with Children for Meaningful Child Participation",
+                category: "Community",
+                process: "Child safeguarding and ethical planning → coordination with child participation facilitators → age-appropriate preparation and informed consent/assent procedures → focus group discussions in a safe, child-friendly setting → analysis of children's views and recommendations → feedback to participants on how their inputs informed planning",
+                output: "Documented children's recommendations and evidence of meaningful child participation",
+                months: ["October", "November"],
+                scheduleType: "span",
+                scheduleLabel: "Oct – Nov",
+                ganttPosition: { months: ["October", "November"], isSpan: true }
+            }
+        ];
+
+        let filteredData = [...activitiesData];
+
+        function renderGanttView() {
+            const container = document.getElementById('ganttRowsContainer');
+            container.innerHTML = '';
+
+            if (filteredData.length === 0) {
+                container.innerHTML = `<div class="p-8 text-center text-slate-400 text-xs">No activities match the search filter criteria.</div>`;
+                return;
+            }
+
+            filteredData.forEach(item => {
+                const colors = activityColors[item.id] || activityColors["1"];
+                const isOct = item.months.includes("October");
+                const isNov = item.months.includes("November");
+                const isDec = item.months.includes("December");
+
+                let octCell = `<div class="col-span-2 border-l border-slate-100 dark:border-slate-700/50 p-2 flex items-center justify-center"></div>`;
+                let novCell = `<div class="col-span-2 border-l border-slate-100 dark:border-slate-700/50 p-2 flex items-center justify-center"></div>`;
+                let decCell = `<div class="col-span-2 border-l border-slate-100 dark:border-slate-700/50 p-2 flex items-center justify-center"></div>`;
+
+                // Render specific activity markers vs continuous bars
+                if (item.id === "1") {
+                    // Police Training - Nov 9-12
+                    novCell = `
+                        <div class="col-span-2 border-l border-slate-100 dark:border-slate-700/50 p-1.5 flex items-center justify-center">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700 shadow-xs">
+                                <i class="fa-solid fa-diamond text-amber-600 dark:text-amber-400 text-[10px]"></i> Nov 9–12
+                            </span>
+                        </div>`;
+                } else if (item.id === "2") {
+                    // KTCAP Training - Dec 2-4
+                    decCell = `
+                        <div class="col-span-2 border-l border-slate-100 dark:border-slate-700/50 p-1.5 flex items-center justify-center">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700 shadow-xs">
+                                <i class="fa-solid fa-diamond text-amber-600 dark:text-amber-400 text-[10px]"></i> Dec 2–4
+                            </span>
+                        </div>`;
+                } else if (item.id === "4") {
+                    // Stakeholders' Meeting - Dec Week 2
+                    decCell = `
+                        <div class="col-span-2 border-l border-slate-100 dark:border-slate-700/50 p-1.5 flex items-center justify-center">
+                            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-md text-xs font-medium bg-indigo-600 text-white shadow-xs">
+                                <i class="fa-solid fa-square text-[8px]"></i> Week 2
+                            </span>
+                        </div>`;
+                } else {
+                    // Standard Implementation Span
+                    if (isOct) {
+                        octCell = `
+                            <div class="col-span-2 border-l border-slate-100 dark:border-slate-700/50 p-2 flex items-center justify-center">
+                                <div class="w-full h-3.5 rounded ${colors.bar} opacity-90 hover:opacity-100 transition-opacity flex items-center justify-center shadow-xs" title="October Implementation"></div>
+                            </div>`;
+                    }
+                    if (isNov) {
+                        novCell = `
+                            <div class="col-span-2 border-l border-slate-100 dark:border-slate-700/50 p-2 flex items-center justify-center">
+                                <div class="w-full h-3.5 rounded ${colors.bar} opacity-90 hover:opacity-100 transition-opacity flex items-center justify-center shadow-xs" title="November Implementation"></div>
+                            </div>`;
+                    }
+                    if (isDec) {
+                        decCell = `
+                            <div class="col-span-2 border-l border-slate-100 dark:border-slate-700/50 p-2 flex items-center justify-center">
+                                <div class="w-full h-3.5 rounded ${colors.bar} opacity-90 hover:opacity-100 transition-opacity flex items-center justify-center shadow-xs" title="December Implementation"></div>
+                            </div>`;
+                    }
+                }
+
+                const rowHtml = `
+                    <div onclick="openModal('${item.id}')" class="grid grid-cols-12 items-center hover:bg-slate-50/80 dark:hover:bg-slate-700/30 transition-colors cursor-pointer group py-2 px-4">
+                        <div class="col-span-1 text-center font-bold">
+                            <span class="inline-block px-2 py-0.5 rounded text-xs ${colors.badge}">${item.id}</span>
+                        </div>
+                        <div class="col-span-5 pr-2">
+                            <h4 class="font-semibold text-slate-800 dark:text-slate-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors text-xs leading-snug">
+                                ${item.title}
+                            </h4>
+                            <p class="text-[11px] text-slate-400 truncate mt-0.5">${item.category}</p>
+                        </div>
+                        ${octCell}
+                        ${novCell}
+                        ${decCell}
+                    </div>
+                `;
+                container.innerHTML += rowHtml;
+            });
+        }
+
+        function renderMatrixView() {
+            const tableBody = document.getElementById('matrixTableBody');
+            tableBody.innerHTML = '';
+
+            if (filteredData.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400 text-xs">No activities match the search filter criteria.</td></tr>`;
+                return;
+            }
+
+            filteredData.forEach(item => {
+                const colors = activityColors[item.id] || activityColors["1"];
+                const processSteps = item.process.split(' → ');
+
+                const rowHtml = `
+                    <tr onclick="openModal('${item.id}')" class="hover:bg-slate-50 dark:hover:bg-slate-700/40 cursor-pointer transition-colors">
+                        <td class="py-3 px-4 text-center align-top font-bold">
+                            <span class="inline-block px-2 py-0.5 rounded text-xs ${colors.badge}">${item.id}</span>
+                        </td>
+                        <td class="py-3 px-4 align-top">
+                            <div class="font-bold text-slate-900 dark:text-white leading-snug">${item.title}</div>
+                        </td>
+                        <td class="py-3 px-4 align-top">
+                            <span class="inline-block px-2 py-0.5 text-[11px] font-medium rounded-full ${colors.bg} ${colors.text} border ${colors.border}">
+                                ${item.category}
+                            </span>
+                        </td>
+                        <td class="py-3 px-4 align-top text-slate-600 dark:text-slate-300">
+                            <ol class="list-decimal list-inside space-y-1">
+                                ${processSteps.slice(0, 3).map(step => `<li class="truncate max-w-md">${step}</li>`).join('')}
+                                ${processSteps.length > 3 ? `<li class="text-indigo-600 dark:text-indigo-400 font-medium text-[11px] list-none">+ ${processSteps.length - 3} more key steps...</li>` : ''}
+                            </ol>
+                        </td>
+                        <td class="py-3 px-4 align-top text-slate-700 dark:text-slate-300 font-medium">
+                            ${item.output}
+                        </td>
+                        <td class="py-3 px-4 align-top text-center">
+                            <span class="inline-block px-2.5 py-1 rounded text-[11px] font-semibold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-600">
+                                ${item.scheduleLabel}
+                            </span>
+                        </td>
+                    </tr>
+                `;
+                tableBody.innerHTML += rowHtml;
+            });
+        }
+
+        function renderCardsView() {
+            const grid = document.getElementById('cardsGrid');
+            grid.innerHTML = '';
+
+            if (filteredData.length === 0) {
+                grid.innerHTML = `<div class="col-span-full p-8 text-center text-slate-400 text-xs">No activities match the search filter criteria.</div>`;
+                return;
+            }
+
+            filteredData.forEach(item => {
+                const colors = activityColors[item.id] || activityColors["1"];
+                const processSteps = item.process.split(' → ');
+
+                const cardHtml = `
+                    <div onclick="openModal('${item.id}')" class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-5 shadow-xs hover:shadow-md transition-all cursor-pointer flex flex-col justify-between group hover:border-indigo-300 dark:hover:border-indigo-600">
+                        <div class="space-y-3">
+                            <div class="flex items-start justify-between gap-2">
+                                <span class="px-2.5 py-0.5 rounded text-xs font-bold ${colors.badge}">${item.id}</span>
+                                <span class="px-2 py-0.5 text-[10px] font-semibold rounded-full ${colors.bg} ${colors.text} border ${colors.border}">
+                                    ${item.category}
+                                </span>
+                            </div>
+
+                            <h3 class="font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors leading-snug">
+                                ${item.title}
+                            </h3>
+
+                            <div class="text-xs text-slate-600 dark:text-slate-300 space-y-1.5">
+                                <div class="font-semibold text-slate-500 dark:text-slate-400 text-[11px] uppercase tracking-wider">Process Highlights:</div>
+                                <p class="line-clamp-3 text-slate-500 dark:text-slate-400 leading-relaxed">
+                                    ${item.process}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between text-xs">
+                            <span class="text-emerald-700 dark:text-emerald-400 font-medium truncate max-w-[180px]" title="${item.output}">
+                                <i class="fa-solid fa-check-circle mr-1"></i> Output Ready
+                            </span>
+                            <span class="font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded">
+                                ${item.scheduleLabel}
+                            </span>
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += cardHtml;
+            });
+        }
+
+        function openModal(id) {
+            const item = activitiesData.find(a => a.id === id);
+            if (!item) return;
+
+            const colors = activityColors[item.id] || activityColors["1"];
+
+            document.getElementById('modalBadge').className = `px-2.5 py-1 rounded-lg text-xs font-bold ${colors.badge}`;
+            document.getElementById('modalBadge').innerText = item.id;
+            document.getElementById('modalTitle').innerText = item.title;
+            document.getElementById('modalCategory').innerText = item.category + " Activity Domain";
+            document.getElementById('modalSchedule').innerText = item.scheduleLabel + " (" + item.months.join(', ') + ")";
+
+            // Format steps with clean icons
+            const steps = item.process.split(' → ');
+            const stepsContainer = document.getElementById('modalSteps');
+            stepsContainer.innerHTML = steps.map((step, idx) => `
+                <div class="flex items-start gap-3 p-2.5 rounded-lg bg-slate-50 dark:bg-slate-900/40 border border-slate-100 dark:border-slate-700/50">
+                    <span class="flex-shrink-0 w-5 h-5 rounded-full ${colors.bar} text-white font-bold text-[10px] flex items-center justify-center mt-0.5">
+                        ${idx + 1}
+                    </span>
+                    <span class="text-xs text-slate-700 dark:text-slate-200 leading-relaxed font-medium">${step}</span>
+                </div>
+            `).join('');
+
+            document.getElementById('modalOutput').innerText = item.output;
+
+            const modal = document.getElementById('activityModal');
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('activityModal').classList.add('hidden');
+        }
+
+        function switchView(viewType) {
+            const gantt = document.getElementById('ganttView');
+            const matrix = document.getElementById('matrixView');
+            const cards = document.getElementById('cardsView');
+
+            const btnGantt = document.getElementById('btnViewGantt');
+            const btnMatrix = document.getElementById('btnViewMatrix');
+            const btnCards = document.getElementById('btnViewCards');
+
+            // Reset classes
+            [btnGantt, btnMatrix, btnCards].forEach(btn => {
+                btn.className = "px-3 py-1.5 rounded-md text-xs font-semibold flex items-center gap-1.5 transition-all text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white";
+            });
+
+            gantt.classList.add('hidden');
+            matrix.classList.add('hidden');
+            cards.classList.add('hidden');
+
+            const activeClass = "px-3 py-1.5 rounded-md text-xs font-semibold flex items-center gap-1.5 transition-all bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-sm";
+
+            if (viewType === 'gantt') {
+                gantt.classList.remove('hidden');
+                btnGantt.className = activeClass;
+            } else if (viewType === 'matrix') {
+                matrix.classList.remove('hidden');
+                btnMatrix.className = activeClass;
+            } else if (viewType === 'cards') {
+                cards.classList.remove('hidden');
+                btnCards.className = activeClass;
+            }
+        }
+
+        function applyFilters() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const category = document.getElementById('categoryFilter').value;
+            const month = document.getElementById('monthFilter').value;
+
+            filteredData = activitiesData.filter(item => {
+                const matchesQuery = item.title.toLowerCase().includes(query) ||
+                                     item.process.toLowerCase().includes(query) ||
+                                     item.output.toLowerCase().includes(query) ||
+                                     item.id.toLowerCase().includes(query);
+
+                const matchesCategory = category === 'ALL' || item.category === category;
+                const matchesMonth = month === 'ALL' || item.months.includes(month);
+
+                return matchesQuery && matchesCategory && matchesMonth;
+            });
+
+            document.getElementById('visibleCount').innerText = filteredData.length;
+
+            renderGanttView();
+            renderMatrixView();
+            renderCardsView();
+        }
+
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                icon.className = "fa-solid fa-moon";
+            } else {
+                html.classList.add('dark');
+                icon.className = "fa-solid fa-sun text-amber-400";
+            }
+        }
+
+        // Close modal on escape key or outside click
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        document.getElementById('activityModal').addEventListener('click', (e) => {
+            if (e.target.id === 'activityModal') closeModal();
+        });
+
+        // Initialize view on page load
+        window.onload = function() {
+            renderGanttView();
+            renderMatrixView();
+            renderCardsView();
+        };
+    </script>
+</body>
+</html>
